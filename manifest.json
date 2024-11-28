@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "Tab Sync Extension",
+    "version": "1.0",
+    "description": "Synchronize actions between master and slave tabs",
+    "permissions": [
+      "storage",
+      "tabs",
+      "scripting"
+    ],
+    
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [{
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }]
+}
