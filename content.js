@@ -81,6 +81,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       case 'zoom':
         applyZoom(data.zoomLevel);
         break;
+      case 'drag':
+        simulateDrag(data);
+        break;
     }
   }
 });
@@ -191,4 +194,51 @@ function findMatchingElement(target) {
   }
 
   return null; // Return null if no match is found
+}
+function simulateDrag(data) {
+  const targetElement = findMatchingElement(data.target);
+
+  if (targetElement) {
+    const rect = targetElement.getBoundingClientRect();
+
+    // Calculate the start and end positions
+    const startX = rect.left + (data.startX || 0);
+    const startY = rect.top + (data.startY || 0);
+    const endX = startX + (data.deltaX || 0);
+    const endY = startY + (data.deltaY || 0);
+
+    // Simulate the mousedown event
+    const mouseDownEvent = new MouseEvent('mousedown', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: startX,
+      clientY: startY,
+    });
+    targetElement.dispatchEvent(mouseDownEvent);
+
+    // Simulate the mousemove event
+    const mouseMoveEvent = new MouseEvent('mousemove', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: endX,
+      clientY: endY,
+    });
+    targetElement.dispatchEvent(mouseMoveEvent);
+
+    // Simulate the mouseup event
+    const mouseUpEvent = new MouseEvent('mouseup', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: endX,
+      clientY: endY,
+    });
+    targetElement.dispatchEvent(mouseUpEvent);
+
+    console.log(`Drag simulated: start(${startX}, ${startY}) -> end(${endX}, ${endY})`);
+  } else {
+    console.error('No matching element found to simulate drag.');
+  }
 }
